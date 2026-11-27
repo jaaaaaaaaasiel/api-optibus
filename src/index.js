@@ -10,7 +10,7 @@ async function starServer() {
     try {
         await connectDatabase();
         const server = app.listen(PORT, () => {
-            const base = `http://localhost:${PORT}`;
+            const base = `https://api-optibus.onrender.com`;
 
             console.log('');
             console.log('—————————————————————————————————');
