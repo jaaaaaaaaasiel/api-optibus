@@ -51,7 +51,11 @@ app.get('/', (req, res) => {
     endpoints: {
       health: "/api/health",
       estaciones: "/api/estaciones",
-      geojson: "/api/estaciones/geojson"
+      puntoInteres: "/api/puntoInteres",
+      reportes: "/api/reportes",
+      lineas: "/api/lineas",
+      usuarios: "/api/usuarios",
+      zonas: "/api/zonas"
     }
   })
 });

@@ -3,6 +3,14 @@
 const mongoose = require('mongoose');
 const AppError = require('../utils/appError');
 
+// Una posición GeoJSON válida es [longitud, latitud] con números en rango
+function isValidPosition(p) {
+    return Array.isArray(p) &&
+        p.length === 2 &&
+        typeof p[0] === 'number' && Number.isFinite(p[0]) && p[0] >= -180 && p[0] <= 180 &&
+        typeof p[1] === 'number' && Number.isFinite(p[1]) && p[1] >= -90 && p[1] <= 90;
+}
+
 const ALLOWED_FIELDS = ['codigo', 'nombre', 'color', 'estaciones', 'recorrido'];
 const REQUIRED_FIELDS = ['codigo', 'nombre', 'color', 'recorrido'];
 
@@ -71,6 +79,8 @@ function validateLineaPayload(options = {}) {
                 body.recorrido.coordinates.length < 2
             ) {
                 errors.push('El recorrido debe ser un GeoJSON LineString válido con al menos 2 puntos');
+            } else if (!body.recorrido.coordinates.every(isValidPosition)) {
+                errors.push('Cada punto del recorrido debe ser [longitud, latitud] numéricos (longitud -180 a 180, latitud -90 a 90)');
             }
         }
 
@@ -102,7 +112,16 @@ function validateLineaQuery(req, res, next) {
     return next();
 }
 
+function validateLineaNumEstaciones(req, res, next) {
+    if (!/^\d+$/.test(req.params.num)) {
+        return next(new AppError(400, 'El número de estaciones debe ser un entero mayor o igual a 0'));
+    }
+
+    return next();
+}
+
 module.exports = {
     validateLineaPayload,
-    validateLineaQuery
+    validateLineaQuery,
+    validateLineaNumEstaciones
 };

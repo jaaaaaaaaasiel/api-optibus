@@ -82,4 +82,4 @@ estacionSchema.pre('save', async function () {
 
 const EstacionModel = mongoose.model('Estacion', estacionSchema);
 
-module.exports = EstacionModel;gt
+module.exports = EstacionModel;

@@ -2,6 +2,22 @@
 
 const AppError = require('../utils/appError');
 
+// Una posición GeoJSON válida es [longitud, latitud] con números en rango
+function isValidPosition(p) {
+    return Array.isArray(p) &&
+        p.length === 2 &&
+        typeof p[0] === 'number' && Number.isFinite(p[0]) && p[0] >= -180 && p[0] <= 180 &&
+        typeof p[1] === 'number' && Number.isFinite(p[1]) && p[1] >= -90 && p[1] <= 90;
+}
+
+// Un anillo debe tener >= 4 posiciones válidas y estar cerrado
+function isValidRing(ring) {
+    if (!Array.isArray(ring) || ring.length < 4 || !ring.every(isValidPosition)) return false;
+    const first = ring[0];
+    const last = ring[ring.length - 1];
+    return first[0] === last[0] && first[1] === last[1];
+}
+
 const ALLOWED_FIELDS = ['nombre', 'color', 'area'];
 const REQUIRED_FIELDS = ['nombre', 'color', 'area'];
 
@@ -52,6 +68,8 @@ function validateZonaPayload(options = {}) {
                 body.area.coordinates[0].length < 4
             ) {
                 errors.push('El área debe ser un GeoJSON Polygon válido con al menos 4 vértices cerrados');
+            } else if (!body.area.coordinates.every(isValidRing)) {
+                errors.push('Cada anillo del área debe tener al menos 4 posiciones [longitud, latitud] válidas y estar cerrado (primer y último punto iguales)');
             }
         }
 
